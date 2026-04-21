@@ -324,16 +324,24 @@ function renderLanding(app) {
   const clock = el('div', 'clock', getClock())
   setInterval(() => { const c = document.querySelector('.clock'); if(c) c.textContent = getClock() }, 10000)
 
-  const h1 = el('h1', '', "You're still awake.")
-  const p1 = el('p', 'body-text', "That's okay. Something's on your mind.")
-  const p2 = el('p', 'body-text', "Let's sit with it for a few minutes.<br>Nothing is saved. Nothing is judged.<br>It disappears when you leave.")
-  p2.style.color = '#4a3820'
-  p2.style.marginBottom = '48px'
+  const h1 = el('h1', '', "Can't sleep?<br>Mind won't stop?")
 
-  const btn = el('button', 'btn-primary', "I'm ready")
+  const tagline = el('div', '', '', 'margin:0 auto 28px;max-width:340px;')
+  tagline.innerHTML = "<p style=\"font-size:18px;color:#c8a96e;font-family:'EB Garamond',serif;line-height:1.8;\">2am is a <em>4-minute guided tool</em> that helps you get the noise out of your head \u2014 so you can finally rest.</p>"
+
+  const features = el('div', '', '', 'margin:0 auto 32px;max-width:360px;text-align:left;')
+  features.innerHTML = "<div style=\"display:flex;flex-direction:column;gap:12px;\"><div style=\"display:flex;align-items:flex-start;gap:12px;\"><span style=\"color:#c8a96e;font-size:14px;margin-top:2px;\">\u2746</span><span style=\"font-size:15px;color:#7a6a48;font-family:'EB Garamond',serif;line-height:1.6;\">Asks you 5 gentle questions to <strong style=\"color:#9a8a60;font-weight:400;\">name what's really bothering you</strong></span></div><div style=\"display:flex;align-items:flex-start;gap:12px;\"><span style=\"color:#c8a96e;font-size:14px;margin-top:2px;\">\u2746</span><span style=\"font-size:15px;color:#7a6a48;font-family:'EB Garamond',serif;line-height:1.6;\">Reflects your own words back so your thoughts <strong style=\"color:#9a8a60;font-weight:400;\">lose their power</strong></span></div><div style=\"display:flex;align-items:flex-start;gap:12px;\"><span style=\"color:#c8a96e;font-size:14px;margin-top:2px;\">\u2746</span><span style=\"font-size:15px;color:#7a6a48;font-family:'EB Garamond',serif;line-height:1.6;\">Gives you <strong style=\"color:#9a8a60;font-weight:400;\">one small thing</strong> to do tomorrow \u2014 so tonight can be enough</span></div></div>"
+
+  const forWho = el('div', '', '', 'margin:0 auto 36px;max-width:340px;background:#0e0b06;border:1px solid #1e1408;border-radius:14px;padding:16px 20px;text-align:left;')
+  forWho.innerHTML = "<div style=\"font-size:9px;color:#3a2810;font-family:'DM Mono',monospace;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:10px;\">For you if...</div><div style=\"font-size:14px;color:#6a5830;font-family:'EB Garamond',serif;line-height:1.9;\">You're lying awake with a spiral of thoughts you can't switch off. Anxiety, overthinking, something that happened, something you're dreading. It doesn't matter what. This is for that feeling.</div>"
+
+  const btn = el('button', 'btn-primary', "Start \u2014 it's free")
   btn.onclick = () => { state.phase = 'breathe'; render() }
 
-  screen.append(moon, clock, h1, p1, p2, btn)
+  const trust = el('div', '', '', 'margin-top:20px;display:flex;justify-content:center;gap:16px;flex-wrap:wrap;')
+  trust.innerHTML = "<span style=\"font-size:10px;color:#2a1e0a;font-family:'DM Mono',monospace;letter-spacing:0.1em;\">\uD83D\uDD12 nothing saved</span><span style=\"font-size:10px;color:#2a1e0a;font-family:'DM Mono',monospace;letter-spacing:0.1em;\">\uD83D\uDC64 no account needed</span><span style=\"font-size:10px;color:#2a1e0a;font-family:'DM Mono',monospace;letter-spacing:0.1em;\">&#x23F1; 4 minutes</span>"
+
+  screen.append(moon, clock, h1, tagline, features, forWho, btn, trust)
 
   if (state.journal.length > 0 && state.unlocked) {
     const jbtn = el('button', '', 'View my journal')
@@ -342,8 +350,6 @@ function renderLanding(app) {
     screen.appendChild(jbtn)
   }
 
-  const muted = el('div', 'muted mt16', '4 minutes · completely private · no account')
-  screen.appendChild(muted)
   app.appendChild(screen)
 }
 
