@@ -1,47 +1,658 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#080603" />
-    <meta name="description" content="A quiet space for when your thoughts won't stop at 2am. Private, anonymous, no account needed." />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#080603" />
+  <meta name="description" content="A quiet space for when your thoughts won't stop at 2am." />
+  <meta property="og:title" content="2am — a quiet space for sleepless nights" />
+  <meta property="og:description" content="When your thoughts won't stop. Private, anonymous, nothing saved." />
+  <meta name="twitter:card" content="summary" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <title>2am</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; background: #080603; color: #e8d8b0; -webkit-font-smoothing: antialiased; }
+    ::selection { background: #c8a96e33; color: #e8d8b0; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: #2a2010; border-radius: 2px; }
+    textarea::placeholder { color: #3a2a10; }
+    button { -webkit-tap-highlight-color: transparent; }
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="2am — a quiet space for sleepless nights" />
-    <meta property="og:description" content="When your thoughts won't stop. Private, anonymous, nothing saved." />
-    <meta property="og:type" content="website" />
+    @keyframes moon-pulse {
+      0%, 100% { box-shadow: 0 0 40px 10px #c8a96e14, 0 0 80px 20px #c8a96e08; }
+      50% { box-shadow: 0 0 60px 18px #c8a96e20, 0 0 120px 36px #c8a96e0c; }
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.06; }
+      50% { opacity: 0.4; }
+    }
+    @keyframes orb-breathe {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+    }
+    @keyframes label-breathe {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.8; }
+    }
+    @keyframes glow-pulse {
+      0%, 100% { box-shadow: 0 0 20px 4px #c8a96e18; }
+      50% { box-shadow: 0 0 40px 10px #c8a96e30; }
+    }
+    @keyframes fadein {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="2am" />
-    <meta name="twitter:description" content="A quiet space for when your thoughts won't stop at night." />
+    #stars {
+      position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0;
+    }
+    .star {
+      position: absolute; border-radius: 50%; background: #e8d8b0;
+    }
+    #vignette {
+      position: fixed; inset: 0; pointer-events: none; z-index: 1;
+      background: radial-gradient(ellipse at center, transparent 40%, #080603 100%);
+    }
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+    #app {
+      position: relative; z-index: 2; min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 60px 24px 60px;
+    }
 
-    <title>2am</title>
+    .screen { width: 100%; max-width: 440px; animation: fadein 0.5s ease forwards; }
 
-    <style>
-      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-      html, body, #root {
-        height: 100%;
-        background: #080603;
-        color: #e8d8b0;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
+    .progress-bar {
+      position: fixed; top: 0; left: 0; right: 0; height: 2px;
+      background: #120f07; z-index: 100;
+    }
+    .progress-fill {
+      height: 100%; background: linear-gradient(90deg, #5a3a10, #c8a96e);
+      transition: width 0.7s ease; box-shadow: 0 0 8px #c8a96e55;
+    }
+
+    .moon {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: radial-gradient(circle at 38% 35%, #f0e8c8, #c8a96e55);
+      margin: 0 auto 36px; animation: moon-pulse 6s ease-in-out infinite;
+    }
+    .moon-small {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: radial-gradient(circle at 40% 40%, #e8d8b044, #c8a96e11);
+      margin: 0 auto 20px;
+    }
+
+    .clock {
+      font-size: 12px; color: #4a3820; font-family: 'DM Mono', monospace;
+      font-weight: 300; letter-spacing: 0.3em; text-align: center; margin-bottom: 28px;
+    }
+
+    h1 { font-size: 36px; font-weight: 400; color: #e8d8b0; font-family: 'EB Garamond', serif; line-height: 1.25; margin-bottom: 20px; text-align: center; }
+    h2 { font-size: 24px; font-weight: 400; color: #e8d8b0; font-family: 'EB Garamond', serif; line-height: 1.4; margin-bottom: 12px; }
+    h3 { font-size: 19px; font-weight: 400; color: #e8d8b0; font-family: 'EB Garamond', serif; margin-bottom: 12px; }
+
+    .sub { font-size: 14px; color: #4a3820; font-family: 'EB Garamond', serif; line-height: 1.7; margin-bottom: 28px; }
+    .body-text { font-size: 17px; color: #6a5830; font-family: 'EB Garamond', serif; line-height: 1.9; text-align: center; margin-bottom: 14px; }
+    .muted { font-size: 10px; color: #2a1e0a; font-family: 'DM Mono', monospace; letter-spacing: 0.14em; text-align: center; }
+    .label { font-size: 10px; color: #3a2810; font-family: 'DM Mono', monospace; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 10px; }
+    .section-title { font-size: 10px; color: #3a2810; font-family: 'DM Mono', monospace; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 14px; text-align: center; }
+
+    .btn-primary {
+      display: flex; align-items: center; justify-content: center;
+      padding: 14px 40px; background: transparent; border: 1px solid #c8a96e44;
+      border-radius: 100px; color: #c8a96e; font-family: 'EB Garamond', serif;
+      font-size: 16px; letter-spacing: 0.04em; cursor: pointer; margin: 0 auto;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+    .btn-primary:hover { border-color: #c8a96eaa; color: #e8d8b0; background: #c8a96e0a; }
+    .btn-primary:disabled { opacity: 0.25; cursor: not-allowed; }
+
+    .btn-ghost {
+      display: flex; align-items: center; justify-content: center;
+      padding: 10px 28px; background: transparent; border: 1px solid #1e1408;
+      border-radius: 100px; color: #3a2810; font-family: 'DM Mono', monospace;
+      font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+      cursor: pointer; margin: 0 auto; transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-ghost:hover { border-color: #3a2810; color: #5a4020; }
+
+    .btn-selar {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 15px 32px; background: linear-gradient(135deg, #1e1508, #2a1e0a);
+      border: 1px solid #c8a96e55; border-radius: 100px; color: #e8c87a;
+      font-family: 'EB Garamond', serif; font-size: 16px; cursor: pointer;
+      text-decoration: none; width: 100%; animation: glow-pulse 4s ease-in-out infinite;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .btn-selar:hover { border-color: #c8a96eaa; background: linear-gradient(135deg, #2a1e0a, #3a2810); }
+
+    .btn-unlock {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 14px 32px; background: transparent; border: 1px solid #4a6a4a55;
+      border-radius: 100px; color: #7aaa7a; font-family: 'EB Garamond', serif;
+      font-size: 15px; cursor: pointer; width: 100%;
+      transition: border-color 0.2s, background 0.2s, color 0.2s;
+    }
+    .btn-unlock:hover { border-color: #7aaa7a88; background: #7aaa7a0a; color: #9acc9a; }
+
+    .choice-btn {
+      width: 100%; padding: 17px 22px; background: #0e0b06;
+      border: 1px solid #221a0c; border-radius: 14px; cursor: pointer;
+      color: #6a5a3a; font-family: 'EB Garamond', serif; font-size: 16px;
+      text-align: left; line-height: 1.4; margin-bottom: 10px;
+      transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.18s;
+    }
+    .choice-btn:hover, .choice-btn.selected {
+      background: #1e1508; border-color: #c8a96e66; color: #e8d8b0; transform: translateX(6px);
+    }
+
+    textarea {
+      width: 100%; background: #0a0703; border: 1px solid #1e1408; border-radius: 14px;
+      padding: 18px 20px; color: #c8b880; font-family: 'EB Garamond', serif;
+      font-size: 17px; line-height: 1.85; resize: none; outline: none;
+      caret-color: #c8a96e; transition: border-color 0.2s;
+    }
+    textarea:focus { border-color: #c8a96e33; }
+
+    .card { background: #0c0906; border: 1px solid #1e1408; border-radius: 16px; padding: 20px 22px; margin-bottom: 14px; }
+    .card-text { font-size: 15px; color: #8a7a52; font-family: 'EB Garamond', serif; font-style: italic; line-height: 1.75; }
+    .card-plain { font-size: 15px; color: #6a5a3a; font-family: 'EB Garamond', serif; line-height: 1.75; }
+    .insight-card { background: #120f06; border: 1px solid #c8a96e22; border-radius: 16px; padding: 22px; margin-bottom: 14px; }
+    .insight-text { font-size: 16px; color: #a89060; font-family: 'EB Garamond', serif; line-height: 1.8; }
+
+    .divider { border: none; border-top: 1px solid #1a1208; margin: 28px 0; }
+
+    .breathe-orb {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: radial-gradient(circle at 40% 40%, #e8d8b044, #c8a96e11);
+      border: 1px solid #c8a96e22; margin: 0 auto;
+      animation: orb-breathe 5s ease-in-out infinite;
+    }
+    .breathe-label {
+      font-size: 10px; color: #8a7a5a; font-family: 'DM Mono', monospace;
+      text-transform: uppercase; text-align: center; margin-top: 16px;
+      animation: label-breathe 5s ease-in-out infinite;
+    }
+
+    .unlock-box { background: #0e0b06; border: 1px solid #2a1e0c; border-radius: 16px; padding: 26px 22px; text-align: center; }
+    .unlock-confirm {
+      display: block; width: 100%; margin-top: 12px; background: none;
+      border: 1px solid #2a4a2a; border-radius: 100px; padding: 13px 0;
+      color: #5a8a5a; font-family: 'DM Mono', monospace; font-size: 11px;
+      letter-spacing: 0.12em; cursor: pointer; text-transform: uppercase;
+    }
+    .maybe-later {
+      margin-top: 12px; background: none; border: none; color: #3a2810;
+      font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em;
+      cursor: pointer; text-transform: uppercase; display: block; margin-left: auto; margin-right: auto;
+    }
+
+    .journal-entry { background: #0c0906; border: 1px solid #1e1408; border-radius: 14px; padding: 18px 20px; margin-bottom: 12px; cursor: pointer; transition: border-color 0.18s; }
+    .journal-entry:hover { border-color: #c8a96e22; }
+    .journal-entry.open { border-color: #c8a96e33; }
+    .journal-detail { margin-top: 16px; border-top: 1px solid #1e1408; padding-top: 16px; }
+
+    .nav-tabs { display: flex; margin-bottom: 24px; }
+    .nav-tab { flex: 1; padding: 10px 0; background: transparent; border: none; border-bottom: 1px solid #1e1408; color: #3a2810; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; transition: color 0.2s, border-color 0.2s; }
+    .nav-tab.active { color: #c8a96e; border-bottom-color: #c8a96e; }
+
+    .bar-wrap { margin-bottom: 12px; }
+    .bar-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+    .bar-track { height: 3px; background: #1a1408; border-radius: 2px; }
+    .bar-fill { height: 100%; background: linear-gradient(90deg, #5a3a10, #c8a96e); border-radius: 2px; }
+
+    .center { text-align: center; }
+    .flex-center { display: flex; justify-content: center; }
+    .mt8 { margin-top: 8px; }
+    .mt12 { margin-top: 12px; }
+    .mt16 { margin-top: 16px; }
+    .mt20 { margin-top: 20px; }
+    .mt24 { margin-top: 24px; }
+    .mt28 { margin-top: 28px; }
+    .mt32 { margin-top: 32px; }
+    .mt36 { margin-top: 36px; }
+    .mb14 { margin-bottom: 14px; }
+    .mb20 { margin-bottom: 20px; }
+    .footnote { font-size: 9px; color: #1e1408; font-family: 'DM Mono', monospace; letter-spacing: 0.14em; text-align: center; margin-top: 16px; }
+  </style>
+</head>
+<body>
+
+<div id="stars"></div>
+<div id="vignette"></div>
+<div id="app"></div>
+
+<script>
+const SELAR_URL = 'https://selar.com/showlove/2am'
+const JOURNAL_KEY = '2am-journal-entries'
+const UNLOCKED_KEY = '2am-journal-unlocked'
+
+// ── State ──────────────────────────────────────────────────────────────────
+let state = {
+  phase: 'landing',   // landing | breathe | question | reflection | journal
+  stepIndex: 0,
+  answers: {},
+  journal: [],
+  unlocked: false,
+  journalTab: 'entries',
+  expandedEntry: null,
+  showUnlock: false,
+  savedSession: false,
+}
+
+const STEPS = [
+  { id: 'whats-up', type: 'choice', prompt: "What's keeping you awake?", sub: 'Pick the one that feels most true right now.', key: 'category',
+    options: [{ label: 'Something happened today', value: 'event' }, { label: "I'm worried about something coming", value: 'worry' }, { label: "My thoughts won't stop looping", value: 'loop' }, { label: "I feel bad and I don't know why", value: 'unknown' }] },
+  { id: 'name-it', type: 'write', prompt: 'Put it into words.', sub: "Don't edit yourself. Just write what's actually in your head. Nobody will see this.", placeholder: "It's about...", key: 'rawThought' },
+  { id: 'body-check', type: 'choice', prompt: 'Where do you feel it in your body?', sub: 'Emotions live somewhere physical. Where is this one?', key: 'bodyLocation',
+    options: [{ label: 'Chest — tight or heavy', value: 'chest' }, { label: 'Stomach — knotted or uneasy', value: 'stomach' }, { label: 'Head — buzzing or aching', value: 'head' }, { label: 'Jaw or shoulders — clenched', value: 'jaw' }, { label: 'Nowhere specific, just... everywhere', value: 'everywhere' }] },
+  { id: 'true-fear', type: 'write', prompt: "If you're honest — what are you actually afraid of?", sub: 'Not what you told yourself. The real thing underneath.', placeholder: "If I'm really honest with myself...", key: 'trueFear' },
+  { id: 'is-now', type: 'choice', prompt: 'Is any of this happening right now?', sub: 'Not tomorrow. Not last week. This exact moment.', key: 'isNow',
+    options: [{ label: 'Yes — something is wrong right now', value: 'yes' }, { label: "No — it's the past or the future", value: 'no' }, { label: "I'm not sure", value: 'unsure' }] },
+  { id: 'one-thing', type: 'write', prompt: 'One thing you could do tomorrow — just one.', sub: 'Not to solve it. Just to make it 1% better.', placeholder: 'Tomorrow I could...', key: 'oneThing' },
+]
+
+const NOW_RESPONSES = {
+  yes: 'Something real is happening — your feelings are valid right now.',
+  no: 'Right now, in this exact moment, you are safe. Your mind is visiting another time.',
+  unsure: 'The uncertainty is exhausting in itself. But right now, you are still here.',
+}
+const BODY_MAP = { chest: 'your chest', stomach: 'your stomach', head: 'your head', jaw: 'your jaw and shoulders', everywhere: 'everywhere at once' }
+const CAT_MAP = { event: 'Something happened', worry: 'Worried about something', loop: 'Thoughts looping', unknown: "Don't know why" }
+
+// ── Storage ────────────────────────────────────────────────────────────────
+function loadState() {
+  try {
+    const j = localStorage.getItem(JOURNAL_KEY)
+    if (j) state.journal = JSON.parse(j)
+    state.unlocked = localStorage.getItem(UNLOCKED_KEY) === 'true'
+  } catch(e) {}
+}
+function saveJournal() {
+  try { localStorage.setItem(JOURNAL_KEY, JSON.stringify(state.journal)) } catch(e) {}
+}
+function unlock() {
+  state.unlocked = true
+  try { localStorage.setItem(UNLOCKED_KEY, 'true') } catch(e) {}
+}
+
+// ── Stars ──────────────────────────────────────────────────────────────────
+function makeStars() {
+  const container = document.getElementById('stars')
+  for (let i = 0; i < 60; i++) {
+    const s = document.createElement('div')
+    s.className = 'star'
+    const size = Math.random() * 1.8 + 0.4
+    s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;width:${size}px;height:${size}px;animation:twinkle ${Math.random()*4+4}s ease-in-out ${Math.random()*6}s infinite`
+    container.appendChild(s)
+  }
+}
+
+// ── Clock ──────────────────────────────────────────────────────────────────
+function getClock() {
+  return new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
+}
+
+// ── Render ─────────────────────────────────────────────────────────────────
+function render() {
+  const app = document.getElementById('app')
+  app.innerHTML = ''
+
+  if (state.phase === 'landing') renderLanding(app)
+  else if (state.phase === 'breathe') renderBreathe(app)
+  else if (state.phase === 'question') renderQuestion(app)
+  else if (state.phase === 'reflection') renderReflection(app)
+  else if (state.phase === 'journal') renderJournal(app)
+}
+
+function el(tag, cls, html, style) {
+  const e = document.createElement(tag)
+  if (cls) e.className = cls
+  if (html) e.innerHTML = html
+  if (style) e.style.cssText = style
+  return e
+}
+
+// ── Landing ────────────────────────────────────────────────────────────────
+function renderLanding(app) {
+  const screen = el('div', 'screen center')
+
+  const moon = el('div', 'moon')
+  const clock = el('div', 'clock', getClock())
+  setInterval(() => { const c = document.querySelector('.clock'); if(c) c.textContent = getClock() }, 10000)
+
+  const h1 = el('h1', '', "You're still awake.")
+  const p1 = el('p', 'body-text', "That's okay. Something's on your mind.")
+  const p2 = el('p', 'body-text', "Let's sit with it for a few minutes.<br>Nothing is saved. Nothing is judged.<br>It disappears when you leave.")
+  p2.style.color = '#4a3820'
+  p2.style.marginBottom = '48px'
+
+  const btn = el('button', 'btn-primary', "I'm ready")
+  btn.onclick = () => { state.phase = 'breathe'; render() }
+
+  screen.append(moon, clock, h1, p1, p2, btn)
+
+  if (state.journal.length > 0 && state.unlocked) {
+    const jbtn = el('button', '', 'View my journal')
+    jbtn.style.cssText = 'margin-top:20px;background:none;border:none;cursor:pointer;font-size:12px;color:#4a3820;font-family:"DM Mono",monospace;letter-spacing:0.14em;text-transform:uppercase;text-decoration:underline;text-decoration-color:#2a1a08;display:block;margin-left:auto;margin-right:auto;'
+    jbtn.onclick = () => { state.phase = 'journal'; render() }
+    screen.appendChild(jbtn)
+  }
+
+  const muted = el('div', 'muted mt16', '4 minutes · completely private · no account')
+  screen.appendChild(muted)
+  app.appendChild(screen)
+}
+
+// ── Breathe ────────────────────────────────────────────────────────────────
+function renderBreathe(app) {
+  renderProgress(app, 0.05)
+  const screen = el('div', 'screen center')
+  const p = el('p', 'body-text', "Before we start —<br>just one breath.")
+  const p2 = el('p', '', 'In for 4. Hold. Out for 6.')
+  p2.style.cssText = 'font-size:15px;color:#5a4830;font-family:"EB Garamond",serif;margin-bottom:44px;'
+  const orb = el('div', 'breathe-orb')
+  const lbl = el('div', 'breathe-label', 'breathe')
+  const btn = el('button', 'btn-primary mt28', "Okay, I'm here")
+  btn.style.marginTop = '48px'
+  btn.onclick = () => { state.stepIndex = 0; state.phase = 'question'; render() }
+  screen.append(p, p2, orb, lbl, btn)
+  app.appendChild(screen)
+}
+
+// ── Question ───────────────────────────────────────────────────────────────
+function renderQuestion(app) {
+  const step = STEPS[state.stepIndex]
+  const progress = (state.stepIndex + 1) / STEPS.length
+  renderProgress(app, progress)
+
+  const screen = el('div', 'screen')
+  screen.style.paddingTop = '20px'
+
+  const h2 = el('h2', '', step.prompt)
+  screen.appendChild(h2)
+  if (step.sub) { const sub = el('p', 'sub', step.sub); screen.appendChild(sub) }
+
+  if (step.type === 'choice') {
+    step.options.forEach(opt => {
+      const btn = el('button', 'choice-btn', opt.label)
+      btn.onclick = () => {
+        state.answers[step.key] = opt.value
+        btn.classList.add('selected')
+        setTimeout(() => {
+          state.stepIndex++
+          if (state.stepIndex >= STEPS.length) { state.phase = 'reflection'; state.savedSession = false; state.showUnlock = false }
+          else state.phase = 'question'
+          render()
+        }, 380)
       }
-      ::selection { background: #c8a96e33; color: #e8d8b0; }
-      ::-webkit-scrollbar { width: 4px; }
-      ::-webkit-scrollbar-track { background: transparent; }
-      ::-webkit-scrollbar-thumb { background: #2a2010; border-radius: 2px; }
-      textarea::placeholder { color: #3a2a10; }
-      button { -webkit-tap-highlight-color: transparent; }
-    </style>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+      screen.appendChild(btn)
+    })
+  } else {
+    const ta = document.createElement('textarea')
+    ta.rows = 5
+    ta.placeholder = step.placeholder
+    screen.appendChild(ta)
+
+    const row = el('div', '', '', 'display:flex;justify-content:space-between;align-items:center;margin-top:16px;')
+    const hint = el('div', '', '⌘ + enter to continue', 'font-size:10px;color:#2a1a08;font-family:"DM Mono",monospace;letter-spacing:0.1em;')
+    ta.oninput = () => { hint.textContent = ta.value.length > 0 ? ta.value.length + ' chars' : '⌘ + enter to continue' }
+
+    const btn = el('button', 'btn-primary', 'Continue →')
+    btn.onclick = () => {
+      if (!ta.value.trim()) return
+      state.answers[step.key] = ta.value.trim()
+      state.stepIndex++
+      if (state.stepIndex >= STEPS.length) { state.phase = 'reflection'; state.savedSession = false; state.showUnlock = false }
+      else state.phase = 'question'
+      render()
+    }
+    ta.onkeydown = e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) btn.click() }
+    row.append(hint, btn)
+    screen.appendChild(row)
+    setTimeout(() => ta.focus(), 300)
+  }
+
+  app.appendChild(screen)
+}
+
+// ── Reflection ─────────────────────────────────────────────────────────────
+function renderReflection(app) {
+  renderProgress(app, 1)
+  const screen = el('div', 'screen')
+
+  // Header
+  const hdr = el('div', 'center mb14')
+  const moonSm = el('div', 'moon-small')
+  const tag = el('div', '', 'You made it through', 'font-size:10px;color:#3a2810;font-family:"DM Mono",monospace;letter-spacing:0.22em;text-transform:uppercase;margin-bottom:10px;')
+  const h2 = el('h2', 'center', "Here's what you said.")
+  h2.style.color = '#c8b880'
+  hdr.append(moonSm, tag, h2)
+  screen.appendChild(hdr)
+
+  // Cards
+  function card(label, text, italic=true) {
+    const c = el('div', 'card')
+    const l = el('div', 'label', label)
+    const t = el('div', italic ? 'card-text' : 'card-plain', italic ? `"${text}"` : text)
+    c.append(l, t); return c
+  }
+
+  screen.appendChild(card('What\'s on your mind', state.answers.rawThought))
+  screen.appendChild(card('What you\'re really afraid of', state.answers.trueFear))
+  screen.appendChild(card('Where you feel it', 'You\'re carrying this in ' + (BODY_MAP[state.answers.bodyLocation] || 'your body') + '.', false))
+
+  const insight = el('div', 'insight-card')
+  insight.innerHTML = `<div class="insight-text">${NOW_RESPONSES[state.answers.isNow] || NOW_RESPONSES.unsure}</div>`
+  screen.appendChild(insight)
+  screen.appendChild(card('One thing for tomorrow', state.answers.oneThing))
+
+  // Breathe
+  const breatheWrap = el('div', 'center', '', 'padding:28px 0 8px;')
+  breatheWrap.innerHTML = '<div class="breathe-orb" style="width:56px;height:56px;"></div><div class="breathe-label">breathe</div>'
+  const closing = el('p', '', 'You got it out of your head.<br><span style="color:#4a3820">That\'s all you needed to do tonight.</span>', 'font-size:17px;color:#6a5830;font-family:"EB Garamond",serif;line-height:1.9;text-align:center;margin-top:24px;')
+  breatheWrap.appendChild(closing)
+  screen.appendChild(breatheWrap)
+
+  // Donate
+  const hr1 = el('hr', 'divider')
+  screen.appendChild(hr1)
+  const donateSection = el('div', 'center')
+  donateSection.innerHTML = `
+    <div class="section-title">If this helped you tonight</div>
+    <p style="font-size:15px;color:#5a4820;font-family:'EB Garamond',serif;line-height:1.8;margin-bottom:22px;">This tool is free and always will be.<br>A small gift keeps it alive.</p>
+  `
+  const selarBtn = el('a', 'btn-selar', '☕ Buy me a coffee')
+  selarBtn.href = SELAR_URL
+  selarBtn.target = '_blank'
+  selarBtn.rel = 'noopener noreferrer'
+  donateSection.appendChild(selarBtn)
+  const selarNote = el('div', 'muted mt8', 'opens selar.com · completely optional')
+  donateSection.appendChild(selarNote)
+  screen.appendChild(donateSection)
+
+  // Journal
+  const hr2 = el('hr', 'divider')
+  screen.appendChild(hr2)
+  const journalSection = el('div', 'center')
+  renderJournalCTA(journalSection)
+  screen.appendChild(journalSection)
+
+  // Reset
+  const hr3 = el('hr', 'divider')
+  screen.appendChild(hr3)
+  const resetBtn = el('button', 'btn-ghost', 'Clear everything & close')
+  resetBtn.onclick = () => { state.answers = {}; state.phase = 'landing'; state.savedSession = false; state.showUnlock = false; render() }
+  const resetWrap = el('div', 'flex-center'); resetWrap.appendChild(resetBtn)
+  screen.appendChild(resetWrap)
+  screen.appendChild(el('div', 'footnote', 'nothing is sent anywhere · your data stays on this device'))
+
+  app.appendChild(screen)
+}
+
+function renderJournalCTA(container) {
+  if (state.savedSession) {
+    container.innerHTML = '<div style="font-size:12px;color:#5a8a5a;font-family:\'DM Mono\',monospace;letter-spacing:0.14em;padding:8px 0;">✓ saved to your journal</div>'
+    return
+  }
+  if (state.showUnlock) {
+    const box = el('div', 'unlock-box')
+    box.innerHTML = `
+      <div style="font-size:20px;margin-bottom:14px;">✦</div>
+      <h3>Unlock your journal</h3>
+      <p style="font-size:14px;color:#6a5830;font-family:'EB Garamond',serif;line-height:1.85;margin-bottom:22px;">Support 2am with any amount on Selar — then come back and tap "I've supported" to unlock your journal permanently on this device.</p>
+    `
+    const selarBtn = el('a', 'btn-selar', '☕ Support on Selar')
+    selarBtn.href = SELAR_URL; selarBtn.target = '_blank'; selarBtn.rel = 'noopener noreferrer'
+    box.appendChild(selarBtn)
+
+    const confirmBtn = el('button', 'unlock-confirm', "✓ I've supported — unlock journal")
+    confirmBtn.onclick = () => {
+      unlock()
+      const entry = { id: new Date().toISOString(), ...state.answers }
+      state.journal.push(entry); saveJournal()
+      state.savedSession = true; state.showUnlock = false
+      render()
+    }
+    box.appendChild(confirmBtn)
+
+    const maybeBtn = el('button', 'maybe-later', 'maybe later')
+    maybeBtn.onclick = () => { state.showUnlock = false; render() }
+    box.appendChild(maybeBtn)
+    container.appendChild(box)
+    return
+  }
+
+  container.innerHTML = `
+    <div class="section-title">${state.unlocked ? 'Save this session' : 'Want to remember this?'}</div>
+    <p style="font-size:15px;color:#5a4820;font-family:'EB Garamond',serif;line-height:1.8;margin-bottom:20px;">${state.unlocked ? 'Save to your private journal. Stored only on this device.' : 'Unlock your private journal — track your nights, see patterns, remember your intentions over time.'}</p>
+  `
+  const unlockBtn = el('button', 'btn-unlock', state.unlocked ? 'Save to journal →' : '✦ Unlock journal')
+  unlockBtn.onclick = () => {
+    if (state.unlocked) {
+      const entry = { id: new Date().toISOString(), ...state.answers }
+      state.journal.push(entry); saveJournal()
+      state.savedSession = true; render()
+    } else {
+      state.showUnlock = true; render()
+    }
+  }
+  container.appendChild(unlockBtn)
+}
+
+// ── Journal ────────────────────────────────────────────────────────────────
+function renderJournal(app) {
+  const screen = el('div', 'screen')
+  screen.style.paddingTop = '20px'
+
+  const hdr = el('div', '', '', 'display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;')
+  const hdrLeft = el('div')
+  hdrLeft.innerHTML = `<h2 style="margin-bottom:4px;">Your journal</h2><div style="font-size:10px;color:#3a2810;font-family:'DM Mono',monospace;letter-spacing:0.14em;">${state.journal.length} session${state.journal.length !== 1 ? 's' : ''} saved</div>`
+  const backBtn = el('button', '', '← Back', 'background:none;border:1px solid #1e1408;border-radius:100px;padding:8px 18px;color:#4a3820;font-family:"DM Mono",monospace;font-size:10px;letter-spacing:0.12em;cursor:pointer;text-transform:uppercase;')
+  backBtn.onclick = () => { state.phase = 'landing'; render() }
+  hdr.append(hdrLeft, backBtn)
+  screen.appendChild(hdr)
+
+  // Tabs
+  const tabs = el('div', 'nav-tabs')
+  ;['entries', 'patterns'].forEach(t => {
+    const tab = el('button', 'nav-tab' + (state.journalTab === t ? ' active' : ''), t === 'entries' ? 'Entries' : 'Patterns')
+    tab.onclick = () => { state.journalTab = t; render() }
+    tabs.appendChild(tab)
+  })
+  screen.appendChild(tabs)
+
+  if (state.journalTab === 'entries') {
+    if (state.journal.length === 0) {
+      screen.appendChild(el('div', 'center', 'No sessions saved yet.', 'padding:60px 0;color:#3a2810;font-family:"EB Garamond",serif;font-size:16px;'))
+    } else {
+      state.journal.slice().reverse().forEach(entry => {
+        const d = new Date(entry.id)
+        const dateStr = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+        const timeStr = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
+        const isOpen = state.expandedEntry === entry.id
+        const row = el('div', 'journal-entry' + (isOpen ? ' open' : ''))
+        row.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+            <div>
+              <div style="font-size:13px;color:#c8a96e;font-family:'EB Garamond',serif;margin-bottom:4px;">${dateStr}</div>
+              <div style="font-size:11px;color:#4a3820;font-family:'DM Mono',monospace;letter-spacing:0.1em;">${timeStr} · ${CAT_MAP[entry.category] || entry.category}</div>
+            </div>
+            <div style="font-size:10px;color:#2a1808;font-family:'DM Mono',monospace;">${isOpen ? '▲' : '▼'}</div>
+          </div>
+          ${isOpen ? `<div class="journal-detail">
+            <div class="label">What was on your mind</div><div class="card-text" style="margin-bottom:12px;">"${entry.rawThought}"</div>
+            <div class="label">The real fear</div><div class="card-text" style="margin-bottom:12px;">"${entry.trueFear}"</div>
+            <div class="label">One thing for tomorrow</div><div style="font-size:14px;color:#7aaa7a;font-family:'EB Garamond',serif;font-style:italic;line-height:1.7;margin-bottom:12px;">"${entry.oneThing}"</div>
+            <div style="font-size:12px;color:#3a2810;font-family:'EB Garamond',serif;">Felt in: ${BODY_MAP[entry.bodyLocation] || entry.bodyLocation}</div>
+          </div>` : ''}
+        `
+        row.onclick = () => { state.expandedEntry = isOpen ? null : entry.id; render() }
+        screen.appendChild(row)
+      })
+    }
+  } else {
+    // Patterns
+    if (state.journal.length < 2) {
+      screen.appendChild(el('div', 'center', 'Save at least 2 sessions<br>to start seeing patterns.', 'padding:40px 0;color:#3a2810;font-family:"EB Garamond",serif;font-size:15px;line-height:1.8;'))
+    } else {
+      const cats = {}; const bodies = {}
+      state.journal.forEach(e => { cats[e.category] = (cats[e.category]||0)+1; bodies[e.bodyLocation] = (bodies[e.bodyLocation]||0)+1 })
+      const topCat = Object.entries(cats).sort((a,b)=>b[1]-a[1])[0]
+      const topBody = Object.entries(bodies).sort((a,b)=>b[1]-a[1])[0]
+      const total = state.journal.length
+
+      if (topCat) {
+        const c = el('div', 'insight-card mb14')
+        c.innerHTML = `<div class="label">Most common trigger</div><div class="insight-text">${CAT_MAP[topCat[0]]||topCat[0]}</div><div style="font-size:11px;color:#4a3820;font-family:'DM Mono',monospace;margin-top:8px;">${topCat[1]} of ${total} sessions</div>`
+        screen.appendChild(c)
+      }
+      if (topBody) {
+        const c = el('div', 'insight-card mb14')
+        c.innerHTML = `<div class="label">Where you most carry it</div><div class="insight-text">${BODY_MAP[topBody[0]]||topBody[0]}</div><div style="font-size:11px;color:#4a3820;font-family:'DM Mono',monospace;margin-top:8px;">${topBody[1]} of ${total} sessions</div>`
+        screen.appendChild(c)
+      }
+
+      const breakdown = el('div', 'card')
+      breakdown.innerHTML = '<div class="label">What keeps you up</div>'
+      Object.entries(cats).sort((a,b)=>b[1]-a[1]).forEach(([cat, count]) => {
+        breakdown.innerHTML += `
+          <div class="bar-wrap">
+            <div class="bar-row"><span style="font-size:13px;color:#8a7a52;font-family:'EB Garamond',serif;">${CAT_MAP[cat]||cat}</span><span style="font-size:11px;color:#4a3820;font-family:'DM Mono',monospace;">${count}×</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width:${(count/total)*100}%"></div></div>
+          </div>`
+      })
+      screen.appendChild(breakdown)
+
+      const intentions = el('div', 'card')
+      intentions.innerHTML = '<div class="label">Recent intentions</div>'
+      state.journal.slice(-5).reverse().forEach(e => {
+        const d = new Date(e.id).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+        intentions.innerHTML += `<div style="margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #1a1208;"><div style="font-size:10px;color:#3a2810;font-family:'DM Mono',monospace;margin-bottom:4px;">${d}</div><div style="font-size:14px;color:#7aaa7a;font-family:'EB Garamond',serif;font-style:italic;line-height:1.6;">"${e.oneThing}"</div></div>`
+      })
+      screen.appendChild(intentions)
+    }
+  }
+
+  app.appendChild(screen)
+}
+
+// ── Progress bar ───────────────────────────────────────────────────────────
+function renderProgress(app, value) {
+  const bar = el('div', 'progress-bar')
+  const fill = el('div', 'progress-fill')
+  fill.style.width = (value * 100) + '%'
+  bar.appendChild(fill)
+  app.appendChild(bar)
+}
+
+// ── Boot ───────────────────────────────────────────────────────────────────
+makeStars()
+loadState()
+render()
+</script>
+</body>
 </html>
