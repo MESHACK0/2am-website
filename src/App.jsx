@@ -117,7 +117,7 @@ function Shell({ children, style = {} }) {
 
 function Fade({ visible, children, maxWidth = 440 }) {
   return (
-    <div style={{ opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(14px)', transition: 'opacity 0.65s ease, transform 0.65s ease', width: '100%', maxWidth }}>
+    <div style={{ opacity: 1, transform: 'translateY(0)', transition: 'opacity 0.65s ease, transform 0.65s ease', width: '100%', maxWidth }}>
       {children}
     </div>
   )
@@ -375,7 +375,7 @@ function JournalView({ entries, onBack, onClearAll }) {
 
   return (
     <Shell style={{ justifyContent: 'flex-start', paddingTop: 60, paddingBottom: 80 }}>
-      <div style={{ width: '100%', maxWidth: 440, opacity: visible ? 1 : 0, transition: 'opacity 0.5s ease' }}>
+      <div style={{ width: '100%', maxWidth: 440, opacity: 1, transition: 'opacity 0.5s ease' }}>
 
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
