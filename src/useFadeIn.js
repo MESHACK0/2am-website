@@ -7,5 +7,10 @@ export default function useFadeIn(trigger, delay = 80) {
     const t = setTimeout(() => setVisible(true), delay)
     return () => clearTimeout(t)
   }, [trigger])
+  // Always visible after mount as fallback
+  useEffect(() => {
+    const t = setTimeout(() => setVisible(true), 500)
+    return () => clearTimeout(t)
+  }, [])
   return visible
 }
